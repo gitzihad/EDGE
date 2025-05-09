@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alphabet Order Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: rgb(199, 210, 217);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: space-between;
+
+        /* background-image: url('');
+  background-repeat: no-repeat;
+  background-position: center;
+  
+  background-size: cover; */
+      }
+      header {
+        text-align: center;
+        background-color: #0bdbd4;
+        color: white;
+        padding: 20px 10px;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        margin: 10px;
+      }
+      .controls button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #0bdbd4;
+        color: white;
+        border-radius: 5px;
+      }
+      .container {
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 10px;
+        width: 100%;
+        max-width: 1100px;
+        padding: 20px;
+        box-sizing: border-box;
+        margin: auto;
+        /* flex-grow: 1;   */
+      }
+      .box {
+        background-color: paleturquoise;
+        border: 2px solid #333;
+        padding: 20px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: grab;
+        transition: background-color 0.2s, transform 0.2s;
+      }
+      .box.dragging {
+        opacity: 0.5;
+      }
+      .box.clicked {
+        background-color: tomato;
+        transform: scale(1.05);
+        cursor: default;
+      }
+      footer {
+        background-color: #0bdbd4;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 16px;
+      }
+
+      @media (max-width: 1024px) {
+        .container {
+          grid-template-columns: repeat(10, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: repeat(6, 1fr);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        .box {
+          padding: 15px;
+          font-size: 20px;
+        }
+        .controls button {
+          padding: 8px 16px;
+          font-size: 14px;
+        }
+        header {
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>Alphabet Drag Game</header>
+    <div class="controls">
+      <button onclick="restartGame()">Restart Game</button>
+    </div>
+    <div class="container" id="container"></div>
+
+    <footer>Developed by Zihad on EDGE Course</footer>
+    <script>
+      const container = document.getElementById("container");
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+      let expectedIndex = 0;
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function createBox(letter) {
+        const box = document.createElement("div");
+        box.className = "box";
+        box.textContent = letter;
+        box.dataset.letter = letter;
+        box.draggable = true;
+
+        box.addEventListener("dragstart", (e) => {
+          e.dataTransfer.setData("letter", letter);
+          box.classList.add("dragging");
+        });
+
+        box.addEventListener("dragend", () => box.classList.remove("dragging"));
+        return box;
+      }
+
+      function renderBoxes() {
+        container.innerHTML = "";
+        const shuffled = shuffle([...letters]);
+        shuffled.forEach((letter) => container.appendChild(createBox(letter)));
+      }
+
+      container.addEventListener("dragover", (e) => e.preventDefault());
+
+      container.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const draggedLetter = e.dataTransfer.getData("letter");
+        if (draggedLetter === letters[expectedIndex]) {
+          const allBoxes = [...container.children];
+          const draggedBox = allBoxes.find(
+            (box) => box.dataset.letter === draggedLetter && box.draggable
+          );
+
+          if (draggedBox) {
+            draggedBox.classList.add("clicked");
+            draggedBox.draggable = false;
+
+            container.removeChild(draggedBox);
+            const newBox = createBox(draggedLetter);
+            newBox.classList.add("clicked");
+            newBox.draggable = false;
+
+            container.insertBefore(newBox, container.children[expectedIndex]);
+            expectedIndex++;
+
+            if (expectedIndex === letters.length) {
+              setTimeout(
+                () => alert("🎉 Congratulations! You Won The Game!"),
+                300
+              );
+            }
+          }
+        }
+      });
+
+      function restartGame() {
+        expectedIndex = 0;
+        renderBoxes();
+      }
+
+      renderBoxes();
+    </script>
+  </body>
+</html>

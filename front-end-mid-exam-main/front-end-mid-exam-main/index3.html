@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Table</h2>
+    <table border="1" id="table"></table>
+
+    <script>
+        const jsonData = `[  
+          {"id": 1, "name": "Alice Johnson", "email": "alice@example.com"},
+          {"id": 2, "name": "Bob Smith", "email": "bob@example.com"},
+          {"id": 3, "name": "Charlie Brown", "email": "charlie@example.com"},
+          {"id": 4, "name": "David Wilson", "email": "david@example.com"},
+          {"id": 5, "name": "Emma Davis", "email": "emma@example.com"},
+          {"id": 6, "name": "Frank Thomas", "email": "frank@example.com"},
+          {"id": 7, "name": "Grace Miller", "email": "grace@example.com"},
+          {"id": 8, "name": "Henry White", "email": "henry@example.com"},
+          {"id": 9, "name": "Isabella Moore", "email": "isabella@example.com"},
+          {"id": 10, "name": "Jack Taylor", "email": "jack@example.com"}
+        ]`;
+
+        let data = JSON.parse(jsonData);
+        let table = document.getElementById("table");
+
+        function iub() {
+            const header = "<tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>";
+            const rows = data.map((obj, index) => `
+                <tr data-index="${index}">
+                    <td>${obj.id}</td>
+                    <td>${obj.name}</td>
+                    <td>${obj.email}</td>
+                    <td><button class="dle">Delete</button></td>
+                </tr>
+            `).join("");
+            table.innerHTML = header + rows;
+
+            document.querySelectorAll(".dle").forEach(button => {
+                button.addEventListener("click", function(e) {
+                    const row = e.target.closest("tr");
+                    const index = row.getAttribute("data-index");
+                    row.remove();
+                    data.splice(index, 1);
+                    iub();  
+                });
+            });
+        }
+
+        iub();  
+    </script>
+</body>
+</html> 
